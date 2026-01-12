@@ -1,0 +1,75 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: frog-identifier-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: frog_identifier
+      MYSQL_USER: frog_user
+      MYSQL_PASSWORD: frog_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - frog-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: frog-identifier-api
+    restart: unless-stopped
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=frog_user
+      - DB_PASSWORD=frog_password
+      - DB_NAME=frog_identifier
+      - DEBUG=true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./backend/uploads:/app/uploads
+      - ./backend/models:/app/models
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - frog-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frog-identifier-frontend
+    restart: unless-stopped
+    environment:
+      - DOCKER=true
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - frog-network
+    tty: true
+    stdin_open: true
+
+volumes:
+  mysql_data:
+
+networks:
+  frog-network:
+    driver: bridge

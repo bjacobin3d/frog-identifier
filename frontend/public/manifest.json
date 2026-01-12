@@ -1,0 +1,19 @@
+{
+  "name": "Frog Identifier",
+  "short_name": "FrogID",
+  "description": "Identify frogs by their calls and photos. Build your personal frog library.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#052e16",
+  "theme_color": "#166534",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/frog-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle", "utilities"]
+}

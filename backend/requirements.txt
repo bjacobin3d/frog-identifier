@@ -1,0 +1,38 @@
+# FastAPI and server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+
+# Database
+sqlalchemy[asyncio]>=2.0.25
+aiomysql>=0.2.0
+alembic>=1.13.0
+pymysql>=1.1.0
+
+# Validation
+pydantic>=2.6.0
+pydantic-settings>=2.1.0
+
+# ML and Audio/Image Processing
+torch>=2.0.0
+torchaudio>=2.0.0
+torchvision>=0.15.0
+librosa>=0.10.0
+pillow>=10.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# BirdNET for real frog/wildlife sound identification
+birdnetlib>=0.15.0
+tensorflow>=2.13.0
+resampy>=0.4.0
+
+# Image classification with HuggingFace transformers
+transformers>=4.36.0
+accelerate>=0.25.0
+tf-keras>=2.16.0
+
+# Utilities
+python-jose[cryptography]>=3.3.0
+aiofiles>=23.0.0
+httpx>=0.26.0
