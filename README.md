@@ -27,7 +27,7 @@ A full-stack web application for identifying frog species by their calls and pho
 - FastAPI with async SQLAlchemy 2.0
 - MySQL 8.0 for data persistence
 - BirdNET (Cornell Lab) for audio species identification
-- HuggingFace CLIP for image classification
+- HuggingFace CLIP for image classification, running on CPU-only PyTorch
 - WebSocket support for real-time audio streaming
 
 **Frontend**
@@ -42,25 +42,42 @@ A full-stack web application for identifying frog species by their calls and pho
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - Git
+- At least 4 GB of memory available to Docker Desktop
 
 ### Setup
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/frog-identifier.git
+git clone git@github.com:bjacobin3d/frog-identifier.git
 cd frog-identifier
 ```
 
-2. Start all services:
+2. Build and start all services:
 
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
-3. Wait about 30-60 seconds for the ML models to load (check logs with `docker-compose logs -f backend`).
+3. Wait for the backend to finish loading its ML models. The first run can take several minutes while it downloads the models; later starts are faster.
 
-4. Open the app at http://localhost:5173
+```bash
+docker compose logs -f backend
+```
+
+The API is ready when the logs include `Frog Identifier API ready`. You can also verify it with:
+
+```bash
+curl http://localhost:8000/health
+```
+
+4. Open the app at http://localhost:5173.
+
+For later starts, the build step is not needed:
+
+```bash
+docker compose up -d
+```
 
 ### Access Points
 
@@ -81,17 +98,17 @@ The Docker setup supports hot-reload for both frontend and backend.
 To view logs:
 
 ```bash
-docker-compose logs -f          # All services
-docker-compose logs -f backend  # Backend only
-docker-compose logs -f frontend # Frontend only
+docker compose logs -f          # All services
+docker compose logs -f backend  # Backend only
+docker compose logs -f frontend # Frontend only
 ```
 
 To rebuild after dependency changes:
 
 ```bash
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## Project Structure
@@ -157,11 +174,22 @@ Clear your browser cache or open in an incognito window. The PWA service worker 
 
 **ML models not loading**
 
-Check the backend logs for errors. The models require significant memory (~2GB). Ensure Docker has enough resources allocated.
+Check the backend logs for errors. The backend uses CPU-only PyTorch, so a GPU is not required, but Docker Desktop needs at least 4 GB of memory available. The first startup can also take several minutes while models download.
 
 ```bash
-docker-compose logs backend | grep -i error
+docker compose logs backend | grep -i error
 ```
+
+**Docker build runs out of disk space**
+
+Remove unused build cache, then rebuild:
+
+```bash
+docker builder prune --force
+docker compose build backend
+```
+
+This removes build cache only; it does not remove Docker images or volumes.
 
 ## License
 

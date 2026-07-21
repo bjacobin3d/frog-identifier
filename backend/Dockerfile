@@ -3,7 +3,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies for audio processing
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libsndfile1 \
     ffmpeg \
@@ -11,7 +11,10 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir \
+    --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0 \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
